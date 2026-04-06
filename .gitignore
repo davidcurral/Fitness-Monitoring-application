@@ -1,0 +1,43 @@
+# --- Database & Storage ---
+# Ignorar a base de dados SQLite (para não subrescrever dados de outros utilizadores)
+*.db
+*.sqlite
+*.sqlite3
+
+# --- Security & Certificates ---
+# NUNCA enviar chaves privadas ou certificados TLS/SSL para o GitHub
+*.crt
+*.key
+*.pem
+*.p12
+*.csr
+certs/
+tls/
+
+# --- Node-RED & Node.js ---
+# Ignorar dependências do Node
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Ficheiros de configuração local do Node-RED (contêm credenciais)
+.config.json
+.config.nodes.json
+flows_cred.json
+
+# --- Docker ---
+# Ignorar ficheiros de ambiente que possam conter passwords
+.env
+
+# --- OS Specific ---
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# --- Python (se usaste para o ML) ---
+__pycache__/
+*.py[cod]
+*$py.class
+.venv/
+venv/

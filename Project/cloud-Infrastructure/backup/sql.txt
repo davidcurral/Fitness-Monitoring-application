@@ -1,0 +1,44 @@
+// Ensure that all required fields exist in the payload and are properly formatted
+if (!msg.payload.date || !msg.payload.time || msg.payload.activity === undefined ||
+    msg.payload.acceleration_x === undefined || msg.payload.acceleration_y === undefined ||
+    msg.payload.acceleration_z === undefined || msg.payload.gyro_x === undefined ||
+    msg.payload.gyro_y === undefined || msg.payload.gyro_z === undefined) {
+
+    node.error("Missing required field(s) in payload: " + JSON.stringify(msg.payload)); // Log error if any field is missing
+    return null;  // Prevent further processing if essential data is missing
+}
+
+// Log the values to ensure they are correctly passed to the SQL query
+node.warn("Payload values: " + JSON.stringify(msg.payload)); // Debug payload
+
+var sql = `
+    INSERT INTO sensor_data1 
+    (date, time, activity, acceleration_x, acceleration_y, acceleration_z, gyro_x, gyro_y, gyro_z) 
+    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?);
+`;
+
+// Extract data from the payload and ensure proper formatting
+var values = [
+    msg.payload.date,
+    msg.payload.time,
+    msg.payload.activity,
+    msg.payload.acceleration_x,
+    msg.payload.acceleration_y,
+    msg.payload.acceleration_z,
+    msg.payload.gyro_x,
+    msg.payload.gyro_y,
+    msg.payload.gyro_z
+];
+
+// Log the extracted values before passing them to the SQLite node
+node.warn("Extracted Values: " + JSON.stringify(values));
+
+// Attach the SQL query and values to the message for the SQLite node
+msg.topic = sql;
+msg.params = values;
+
+// Log the final message to verify before passing it to the SQLite node
+node.warn("Final message to SQLite: " + JSON.stringify(msg));
+
+// Pass the message along for execution by the SQLite node
+return msg;

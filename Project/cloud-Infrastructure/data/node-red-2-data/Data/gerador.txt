@@ -1,0 +1,13 @@
+Geração de um CSV com as seguintes regras usando valores aleatório:
+- a ordem das colunas a criar é: {timestamp; atividade; user; acceleration_x; acceleration_y; acceleration_z; gyro_x; gyro_y; gyro_z};
+- o separador deve ser das colunas é ";";
+- o formato do timestamp é YYYY-MM-DD HH:MM:SS;
+- essa atividade foi realizada numa uma data definida (algures entre inicio de janeiro e final de dezembro);
+- toda a atividade desses linhas foram realizadas no mesmo dia, variando a hora (iniciada entre as 8h e as 23h);
+- ao valor inicial da hora, deve ser incrementado um valor entre 15 e 30 segundos para cada linha;
+- cria um conjunto de linhas (entre 30 e 60) para uma atividade (entre 0 e 1);
+- cada bloco de atividades (conjunto de linhas) pertence a um Client;
+- os clientes podem ser: Client1, Client2 ou Client 3;
+- as 6 colunas restantes devem ser povoada com valores entre -1 e 1 (4 casas decimais);
+- devem ser criadas cerca de 10000 linhas;
+

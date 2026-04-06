@@ -1,0 +1,323 @@
+[
+    {
+        "id": "e38ea6814273b4e5",
+        "type": "tab",
+        "label": "Client 1 e 2",
+        "disabled": false,
+        "info": "",
+        "env": []
+    },
+    {
+        "id": "f5279b01.b328d8",
+        "type": "mqtt-broker",
+        "name": "",
+        "broker": "172.100.10.10",
+        "port": "8883",
+        "tls": "d803a089441df9d5",
+        "clientid": "",
+        "autoConnect": true,
+        "usetls": true,
+        "protocolVersion": "4",
+        "keepalive": "60",
+        "cleansession": true,
+        "autoUnsubscribe": true,
+        "birthTopic": "",
+        "birthQos": "0",
+        "birthPayload": "",
+        "birthMsg": {},
+        "closeTopic": "",
+        "closeQos": "0",
+        "closePayload": "",
+        "closeMsg": {},
+        "willTopic": "",
+        "willQos": "0",
+        "willPayload": "",
+        "willMsg": {},
+        "userProps": "",
+        "sessionExpiry": ""
+    },
+    {
+        "id": "d803a089441df9d5",
+        "type": "tls-config",
+        "name": "",
+        "cert": "",
+        "key": "",
+        "ca": "",
+        "certname": "client.crt",
+        "keyname": "client.key",
+        "caname": "ca.crt",
+        "servername": "",
+        "verifyservercert": false,
+        "alpnprotocol": ""
+    },
+    {
+        "id": "6811be1d876d957a",
+        "type": "sqlitedb",
+        "db": "/data/Data/IOT",
+        "mode": "RWC"
+    },
+    {
+        "id": "2456a31d93a4c570",
+        "type": "file in",
+        "z": "e38ea6814273b4e5",
+        "name": "Localizacao_Online",
+        "filename": "/data/Data/onlinedata.csv",
+        "filenameType": "str",
+        "format": "lines",
+        "chunk": false,
+        "sendError": false,
+        "encoding": "none",
+        "allProps": false,
+        "x": 450,
+        "y": 80,
+        "wires": [
+            [
+                "0c998ce7c1db9c75"
+            ]
+        ]
+    },
+    {
+        "id": "4b0837d5e0f9a030",
+        "type": "inject",
+        "z": "e38ea6814273b4e5",
+        "name": "Online_MQTT_Client1",
+        "props": [
+            {
+                "p": "payload"
+            },
+            {
+                "p": "topic",
+                "vt": "str"
+            }
+        ],
+        "repeat": "",
+        "crontab": "",
+        "once": false,
+        "onceDelay": 0.1,
+        "topic": "",
+        "payload": "",
+        "payloadType": "date",
+        "x": 160,
+        "y": 80,
+        "wires": [
+            [
+                "2456a31d93a4c570"
+            ]
+        ]
+    },
+    {
+        "id": "0c998ce7c1db9c75",
+        "type": "csv",
+        "z": "e38ea6814273b4e5",
+        "name": "Format_Online",
+        "spec": "rfc",
+        "sep": ";",
+        "hdrin": true,
+        "hdrout": "none",
+        "multi": "one",
+        "ret": "\\r",
+        "temp": "",
+        "skip": "0",
+        "strings": true,
+        "include_empty_strings": "",
+        "include_null_values": "",
+        "x": 720,
+        "y": 80,
+        "wires": [
+            [
+                "c8f6697f08bb7326"
+            ]
+        ]
+    },
+    {
+        "id": "694512de030bf385",
+        "type": "function",
+        "z": "e38ea6814273b4e5",
+        "name": "Prepara_Dados_MQTT",
+        "func": "// Verifica se o payload contém os campos necessários\nif (!msg.payload ||\n    typeof msg.payload.acceleration_x === \"undefined\" ||\n    typeof msg.payload.acceleration_y === \"undefined\" ||\n    typeof msg.payload.acceleration_z === \"undefined\" ||\n    typeof msg.payload.gyro_x === \"undefined\" ||\n    typeof msg.payload.gyro_y === \"undefined\" ||\n    typeof msg.payload.gyro_z === \"undefined\") {\n\n    return null; // Ignora mensagens incompletas\n}\n\n// Gera o timestamp atual no formato ISO, sem \"Z\"\nlet timestamp = new Date().toISOString().replace(\"T\", \" \").replace(\"Z\", \"\");\n\n// Formata os dados a publicar no MQTT\nlet processedPayload = {\n    timestamp: timestamp,\n    client: \"Client1\", // Adiciona o valor estático \"Client1\"\n    acceleration_x: msg.payload.acceleration_x,\n    acceleration_y: msg.payload.acceleration_y,\n    acceleration_z: msg.payload.acceleration_z,\n    gyro_x: msg.payload.gyro_x,\n    gyro_y: msg.payload.gyro_y,\n    gyro_z: msg.payload.gyro_z\n};\n\n// Define o tópico e o payload\nmsg.payload = processedPayload;\nmsg.topic = \"online/processed\";\n\nreturn msg;\n",
+        "outputs": 1,
+        "timeout": 0,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 1250,
+        "y": 80,
+        "wires": [
+            [
+                "663fdc7c8d200f9e"
+            ]
+        ]
+    },
+    {
+        "id": "c8f6697f08bb7326",
+        "type": "delay",
+        "z": "e38ea6814273b4e5",
+        "name": "",
+        "pauseType": "rate",
+        "timeout": "5",
+        "timeoutUnits": "seconds",
+        "rate": "10",
+        "nbRateUnits": "1",
+        "rateUnits": "second",
+        "randomFirst": "1",
+        "randomLast": "5",
+        "randomUnits": "seconds",
+        "drop": false,
+        "allowrate": false,
+        "outputs": 1,
+        "x": 980,
+        "y": 80,
+        "wires": [
+            [
+                "694512de030bf385"
+            ]
+        ]
+    },
+    {
+        "id": "663fdc7c8d200f9e",
+        "type": "mqtt out",
+        "z": "e38ea6814273b4e5",
+        "name": "",
+        "topic": "IoT/DavPed",
+        "qos": "1",
+        "retain": "",
+        "respTopic": "",
+        "contentType": "",
+        "userProps": "",
+        "correl": "",
+        "expiry": "",
+        "broker": "f5279b01.b328d8",
+        "x": 1510,
+        "y": 120,
+        "wires": []
+    },
+    {
+        "id": "866658868212398a",
+        "type": "comment",
+        "z": "e38ea6814273b4e5",
+        "name": "Lê CSV Client e envia por MQTT",
+        "info": "",
+        "x": 170,
+        "y": 40,
+        "wires": []
+    },
+    {
+        "id": "5d7aee82721b99d8",
+        "type": "file in",
+        "z": "e38ea6814273b4e5",
+        "name": "Localizacao_Online",
+        "filename": "/data/Data/onlinedata.csv",
+        "filenameType": "str",
+        "format": "lines",
+        "chunk": false,
+        "sendError": false,
+        "encoding": "none",
+        "allProps": false,
+        "x": 450,
+        "y": 160,
+        "wires": [
+            [
+                "aac7155abf029abd"
+            ]
+        ]
+    },
+    {
+        "id": "9b7e51676eef28f9",
+        "type": "inject",
+        "z": "e38ea6814273b4e5",
+        "name": "Online_MQTT_Client2",
+        "props": [
+            {
+                "p": "payload"
+            },
+            {
+                "p": "topic",
+                "vt": "str"
+            }
+        ],
+        "repeat": "",
+        "crontab": "",
+        "once": false,
+        "onceDelay": 0.1,
+        "topic": "",
+        "payload": "",
+        "payloadType": "date",
+        "x": 160,
+        "y": 160,
+        "wires": [
+            [
+                "5d7aee82721b99d8"
+            ]
+        ]
+    },
+    {
+        "id": "aac7155abf029abd",
+        "type": "csv",
+        "z": "e38ea6814273b4e5",
+        "name": "Format_Online",
+        "spec": "rfc",
+        "sep": ";",
+        "hdrin": true,
+        "hdrout": "none",
+        "multi": "one",
+        "ret": "\\r",
+        "temp": "",
+        "skip": "0",
+        "strings": true,
+        "include_empty_strings": "",
+        "include_null_values": "",
+        "x": 720,
+        "y": 160,
+        "wires": [
+            [
+                "1ef54c107b08ee0d"
+            ]
+        ]
+    },
+    {
+        "id": "8f5f8812ab553a6f",
+        "type": "function",
+        "z": "e38ea6814273b4e5",
+        "name": "Prepara_Dados_MQTT",
+        "func": "// Verifica se o payload contém os campos necessários\nif (!msg.payload ||\n    typeof msg.payload.acceleration_x === \"undefined\" ||\n    typeof msg.payload.acceleration_y === \"undefined\" ||\n    typeof msg.payload.acceleration_z === \"undefined\" ||\n    typeof msg.payload.gyro_x === \"undefined\" ||\n    typeof msg.payload.gyro_y === \"undefined\" ||\n    typeof msg.payload.gyro_z === \"undefined\") {\n\n    return null; // Ignora mensagens incompletas\n}\n\n// Gera o timestamp atual no formato ISO, sem \"Z\"\nlet timestamp = new Date().toISOString().replace(\"T\", \" \").replace(\"Z\", \"\");\n\n// Formata os dados a publicar no MQTT\nlet processedPayload = {\n    timestamp: timestamp,\n    client: \"Client2\", // Adiciona o valor estático \"Client1\"\n    acceleration_x: msg.payload.acceleration_x,\n    acceleration_y: msg.payload.acceleration_y,\n    acceleration_z: msg.payload.acceleration_z,\n    gyro_x: msg.payload.gyro_x,\n    gyro_y: msg.payload.gyro_y,\n    gyro_z: msg.payload.gyro_z\n};\n\n// Define o tópico e o payload\nmsg.payload = processedPayload;\nmsg.topic = \"online/processed\";\n\nreturn msg;\n",
+        "outputs": 1,
+        "timeout": 0,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 1250,
+        "y": 160,
+        "wires": [
+            [
+                "663fdc7c8d200f9e"
+            ]
+        ]
+    },
+    {
+        "id": "1ef54c107b08ee0d",
+        "type": "delay",
+        "z": "e38ea6814273b4e5",
+        "name": "",
+        "pauseType": "rate",
+        "timeout": "5",
+        "timeoutUnits": "seconds",
+        "rate": "10",
+        "nbRateUnits": "1",
+        "rateUnits": "second",
+        "randomFirst": "1",
+        "randomLast": "5",
+        "randomUnits": "seconds",
+        "drop": false,
+        "allowrate": false,
+        "outputs": 1,
+        "x": 980,
+        "y": 160,
+        "wires": [
+            [
+                "8f5f8812ab553a6f"
+            ]
+        ]
+    }
+]
